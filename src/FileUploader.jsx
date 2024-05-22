@@ -1,7 +1,7 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import useXMLFileStore from "./store/useXMLFileStore";
 
-export default function FileUploader({ onFileLoaded }) {
+export default function FileUploader() {
   const { xmlContent, setXMLContent } = useXMLFileStore();
 
   const navigate = useNavigate();
@@ -15,8 +15,7 @@ export default function FileUploader({ onFileLoaded }) {
       reader.onload = (e) => {
         const fileContent = e.target.result;
         setXMLContent(fileContent);
-        onFileLoaded(fileContent); //Llama a la función proporcionada por las props
-        navigate("/form"); //Redirige al usuario a a la pagina /xml
+        navigate("/xml-text"); //Redirige al usuario a a la pagina /xml
       };
       reader.readAsText(file);
     }

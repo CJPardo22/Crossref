@@ -4,24 +4,13 @@ import FileUploader from "./FileUploader";
 import XMLContent from "./XMLContent";
 import XMLTextContent from "./XMLTextContent";
 import { XmlForm } from "./XmlForm";
-import useXMLFileStore from "./store/useXMLFileStore";
 
 export default function App() {
-  const { setXMLContent, xmlContent } = useXMLFileStore();
-  // console.log("😶‍🌫️", xmlContent);
-
-  const handleFileLoaded = (content) => {
-    setXMLContent(content);
-  };
-
   return (
     <>
       <Router>
         <Routes>
-          <Route
-            path="/"
-            element={<FileUploader onFileLoaded={handleFileLoaded} />}
-          />
+          <Route path="/" element={<FileUploader />} />
 
           <Route path="/xml" element={<XMLContent />} />
 
