@@ -1,9 +1,11 @@
 import XMLParser from "react-xml-parser";
 import { useState, useEffect } from "react";
 import { parse, v4 as uuidv4 } from "uuid";
+import useXMLFileStore from "./store/useXMLFileStore";
 
-export const XmlForm = ({ xml }) => {
-  const parsedXML = new XMLParser().parseFromString(xml);
+export const XmlForm = () => {
+  const { xmlContent } = useXMLFileStore();
+  const parsedXML = new XMLParser().parseFromString(xmlContent);
   //!Estado del XML
   const [modifiedXML, setModifiedXML] = useState(parsedXML);
 

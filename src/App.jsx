@@ -3,19 +3,19 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import FileUploader from "./FileUploader";
 import XMLContent from "./XMLContent";
 import XMLTextContent from "./XMLTextContent";
-import { XMLProvider } from "./XMLContext";
-import {XmlForm} from "./XmlForm";
+import { XmlForm } from "./XmlForm";
+import useXMLFileStore from "./store/useXMLFileStore";
 
 export default function App() {
-  const [xmlContent, setXmlContent] = useState(null);
+  const { setXMLContent, xmlContent } = useXMLFileStore();
+  // console.log("😶‍🌫️", xmlContent);
 
   const handleFileLoaded = (content) => {
-    setXmlContent(content);
-    // console.log("🥑", content);
+    setXMLContent(content);
   };
 
-  return ( 
-    <XMLProvider>
+  return (
+    <>
       <Router>
         <Routes>
           <Route
@@ -23,20 +23,13 @@ export default function App() {
             element={<FileUploader onFileLoaded={handleFileLoaded} />}
           />
 
-          <Route path="/xml" element={<XMLContent xml={xmlContent} />} />
-          {/* {console.log("😶‍🌫️", xmlContent)} */}
+          <Route path="/xml" element={<XMLContent />} />
 
-          <Route
-            path="/xml-text"
-            element={<XMLTextContent xml={xmlContent} />}
-          />
+          <Route path="/xml-text" element={<XMLTextContent />} />
 
-          <Route
-            path="/form"
-            element={<XmlForm xml={xmlContent}/>}
-          />
+          <Route path="/form" element={<XmlForm />} />
         </Routes>
       </Router>
-    </XMLProvider>
+    </>
   );
 }
