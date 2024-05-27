@@ -3,7 +3,7 @@ import useXMLFileStore from "./store/useXMLFileStore";
 
 export default function FileUploader() {
   const { xmlContent, setXMLContent } = useXMLFileStore();
-
+  // console.log("🥑", xmlContent);
   const navigate = useNavigate();
 
   const handleFileChange = (event) => {

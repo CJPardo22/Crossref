@@ -4,8 +4,12 @@ import FileUploader from "./FileUploader";
 import XMLContent from "./XMLContent";
 import XMLTextContent from "./XMLTextContent";
 import { XmlForm } from "./XmlForm";
+import useXMLFileStore from "./store/useXMLFileStore";
 
 export default function App() {
+  const { xmlContent } = useXMLFileStore();
+  console.log("😁", xmlContent);
+
   return (
     <>
       <Router>
