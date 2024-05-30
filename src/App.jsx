@@ -8,7 +8,7 @@ import useXMLFileStore from "./store/useXMLFileStore";
 
 export default function App() {
   const { xmlContent } = useXMLFileStore();
-  console.log("😁", xmlContent);
+  // console.log("😁", xmlContent);
 
   return (
     <>

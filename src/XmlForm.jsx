@@ -1,28 +1,37 @@
 import XMLParser from "react-xml-parser";
-import { useState, useEffect } from "react";
-import { parse, v4 as uuidv4 } from "uuid";
+import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import useXMLFileStore from "./store/useXMLFileStore";
 
 export const XmlForm = () => {
-  const { xmlContent } = useXMLFileStore();
+  const { xmlContent, setXMLContent } = useXMLFileStore();
   const parsedXML = new XMLParser().parseFromString(xmlContent);
-  //!Estado del XML
   const [modifiedXML, setModifiedXML] = useState(parsedXML);
 
-  console.log(parsedXML);
+  const handleInputChange = (e, node) => {
+    const newValue = e.target.value;
+    node.value = newValue;
+    setModifiedXML({ ...modifiedXML });
+  };
+
+  const handleSave = () => {
+    const updatedXMLString = new XMLParser().toString(modifiedXML);
+    setXMLContent(updatedXMLString);
+    console.log("Updated XML JSON:", modifiedXML);
+    console.log("🤠", updatedXMLString)
+  };
+
   const renderForm = (jsonData) => {
     const processNode = (node) => {
-      //!Funcion para los cambios
-      const cambios = (e) => {
-        console.log(node.name);
-        setModifiedXML(e.target.value);
-      };
-      //!acá
       if (node.name && node.value) {
         return (
           <div key={uuidv4()}>
-            <label> {node.name} </label>
-            <input onSubmit={cambios} type="text" defaultValue={node.value} />
+            <label>{node.name}</label>
+            <input
+              type="text"
+              value={node.value}
+              onChange={(e) => handleInputChange(e, node)}
+            />
             <br />
           </div>
         );
@@ -32,7 +41,6 @@ export const XmlForm = () => {
         return (
           <div key={uuidv4()}>
             <br />
-            {/* <h3>{node.name}</h3> */}
             {node.children.map((child) => processNode(child))}
           </div>
         );
@@ -40,12 +48,14 @@ export const XmlForm = () => {
 
       return null;
     };
+
     return jsonData.children.map((child) => processNode(child));
   };
 
   return (
     <>
-      <div>{renderForm(parsedXML)}</div>
+      <div>{renderForm(modifiedXML)}</div>
+      <button onClick={handleSave}>Guardar</button>
     </>
   );
 };
