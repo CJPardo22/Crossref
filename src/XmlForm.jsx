@@ -9,8 +9,8 @@ import Form from "react-bootstrap/Form";
 export const XmlForm = () => {
   const { xmlContent, setXMLContent } = useXMLFileStore();
   const parsedXML = new XMLParser().parseFromString(xmlContent);
-  console.log("🦁", parsedXML);
   const [modifiedXML, setModifiedXML] = useState(parsedXML);
+
 
   const handleInputChange = (e, node) => {
     const newValue = e.target.value;
@@ -19,27 +19,32 @@ export const XmlForm = () => {
   };
 
   const handleAddCrossmark = (value) => {
-    const newJSON = {...modifiedXML}
-  };
+    const newJSON = { ...modifiedXML };
 
-  const addCrossmarkToNode = (node) => {
-    if (node.name === "pages") {
-      const crossmarkNode = {
-        name: "Crossmark",
-        attributes: {},
-        value: value,
-        children: [],
-      };
-      const parentNode = node.parent;
-      if (parentNode && parentNode.children) {
-        const index = parentNode.children.indexOf(node);
-        parentNode.children.splice(index + 1, 0, crossmarkNode);
+    const addCrossmarkToNode = (node, parent = null) => {
+      if (node.name === "pages") {
+        const crossmarkNode = {
+          name: "Crossmark",
+          attributes: {},
+          value: value,
+          children: [],
+        };
+        console.log("💡 Entro en el primer IF");
+        if (parent && parent.children) {
+          console.log("💡 Entro en el segundo IF");
+          const index = parent.children.indexOf(node);
+          parent.children.splice(index + 1, 0, crossmarkNode);
+        }
       }
-    }
-    if (newJSON.children && newJSON.children.length > 0) {
-      newJSON.children.forEach(addCrossmarkToNode);
-    }
+      if (node.children && node.children.length > 0) {
+        console.log("💡 Entro en el tercer IF");
+        node.children.forEach((child) => addCrossmarkToNode(child, node));
+      }
+    };
+
+    newJSON.children.forEach((child) => addCrossmarkToNode(child));
     setModifiedXML(newJSON);
+    console.log("❤️", newJSON);
   };
 
   const handleSave = () => {
@@ -66,17 +71,11 @@ export const XmlForm = () => {
         return (
           <div key={uuidv4()}>
             <Form.Label>{node.name} :</Form.Label>
-            {/* <label>{node.name}</label> */}
             <Form.Control
               type="text"
               value={node.value}
               onChange={(e) => handleInputChange(e, node)}
             />
-            {/* <input
-              type="text"
-              value={node.value}
-              onChange={(e) => handleInputChange(e, node)}
-            /> */}
             <br />
           </div>
         );
