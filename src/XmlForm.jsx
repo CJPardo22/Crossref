@@ -2,6 +2,7 @@ import XMLParser from "react-xml-parser";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AddCrossmark } from "./AddCrossmark";
+import { basedatos } from "./basedatos";
 import useXMLFileStore from "./store/useXMLFileStore";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -11,7 +12,6 @@ export const XmlForm = () => {
   const parsedXML = new XMLParser().parseFromString(xmlContent);
   const [modifiedXML, setModifiedXML] = useState(parsedXML);
 
-
   const handleInputChange = (e, node) => {
     const newValue = e.target.value;
     node.value = newValue;
@@ -20,14 +20,73 @@ export const XmlForm = () => {
 
   const handleAddCrossmark = (value) => {
     const newJSON = { ...modifiedXML };
+    let institucion = "";
 
     const addCrossmarkToNode = (node, parent = null) => {
-      if (node.name === "pages") {
+      if (node.name === "registrant") {
+        let registrant = node.value.toLowerCase().trim();
+        const resultado = basedatos.find(
+          (obj) => obj.institucion === registrant
+        );
+        if (resultado) {
+          institucion = resultado.policy;
+          console.log("Institución encontrada: ", resultado.policy);
+        } else {
+          console.log("Institucion no encontrada");
+        }
+      }
+      if (node.name === "pages" && institucion) {
         const crossmarkNode = {
           name: "Crossmark",
           attributes: {},
-          value: value,
-          children: [],
+          value: "",
+          children: [
+            {
+              name: "crossmark_policy",
+              attributes: {},
+              value: institucion,
+              children: [],
+            },
+            {
+              name: "crossmark_domains",
+              attributes: {},
+              value: "",
+              children: [
+                {
+                  name: "crossmark_domain",
+                  attributes: {},
+                  value: "",
+                  children: [
+                    {
+                      name: "domain",
+                      attributes: {},
+                      value: "psychoceramics.labs.crossref.org",
+                      children: [],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              name: "custom_metadata",
+              attributes: {},
+              value: "",
+              children: [
+                {
+                  name: "assertion",
+                  attributes: {
+                    name: "received",
+                    label: "Received",
+                    group_name: "publication_history",
+                    group_label: "Publication History",
+                    order: "0",
+                  },
+                  value: value,
+                  children: [],
+                },
+              ],
+            },
+          ],
         };
         console.log("💡 Entro en el primer IF");
         if (parent && parent.children) {

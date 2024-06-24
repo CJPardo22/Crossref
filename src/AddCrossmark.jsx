@@ -49,12 +49,12 @@ export const AddCrossmark = ({ onSave }) => {
         <Modal.Body>
           <Form>
             <Form.Group controlId="formCrossmarkValue">
-              <Form.Label>Valor Crossmark:</Form.Label>
+              <Form.Label>Fecha de recibido:</Form.Label>
               <Form.Control
-                type="text"
+                type="date"
                 value={inputValue}
                 onChange={handleInputChange}
-                placeholder="Ingrese el valor de Crossmark"
+                placeholder="Ingrese la fecha de recibido A/M/D"
                 isInvalid={isInputEmpty}
               />
               <Form.Control.Feedback type="invalid">
