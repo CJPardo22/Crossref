@@ -18,7 +18,7 @@ export const XmlForm = () => {
     setModifiedXML({ ...modifiedXML });
   };
 
-  const handleAddCrossmark = (value) => {
+  const handleAddCrossmark = (values) => {
     const newJSON = { ...modifiedXML };
     let institucion = "";
 
@@ -81,7 +81,31 @@ export const XmlForm = () => {
                     group_label: "Publication History",
                     order: "0",
                   },
-                  value: value,
+                  value: values.receivedDate,
+                  children: [],
+                },
+                {
+                  name: "assertion",
+                  attributes: {
+                    name: "accepted",
+                    label: "Accepted",
+                    group_name: "publication_histoy",
+                    group_label: "Publication_History",
+                    order: "1",
+                  },
+                  value: values.acceptedDate,
+                  children: [],
+                },
+                {
+                  name: "assertion",
+                  attributes: {
+                    name: "published_online",
+                    label: "Published Online",
+                    group_name: "publication_histoy",
+                    group_label: "Publication_History",
+                    order: "2",
+                  },
+                  value: values.publishedDate,
                   children: [],
                 },
               ],

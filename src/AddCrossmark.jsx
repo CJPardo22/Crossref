@@ -5,20 +5,40 @@ import Form from "react-bootstrap/Form";
 
 export const AddCrossmark = ({ onSave }) => {
   const [show, setShow] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [receivedDate, setReceivedDate] = useState("");
+  const [acceptedDate, setAcceptedDate] = useState("");
+  const [publishedDate, setPublishedDate] = useState("");
   const [isInputEmpty, setIsInputEmpty] = useState(false);
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+  const handleReceivedDateChange = (e) => {
+    setReceivedDate(e.target.value);
   };
 
+  const handleAcceptedDateChange = (e) => {
+    setAcceptedDate(e.target.value);
+  };
+
+  const handlePublisedDateChange = (e) =>{
+    setPublishedDate(e.target.value)
+  }
+
   const handleSubmit = () => {
-    const trimmedValue = inputValue.trim();
-    if (trimmedValue === "") {
+    const trimmedReceivedDate = receivedDate.trim();
+    const trimmedAcceptedDate = acceptedDate.trim();
+    const trimmedPublishedDate = publishedDate.trim();
+
+    if (trimmedReceivedDate === "" || trimmedAcceptedDate === "" || trimmedAcceptedDate === "") {
       setIsInputEmpty(true);
     } else {
-      onSave(trimmedValue);
-      setInputValue("");
+      onSave({
+        receivedDate: trimmedReceivedDate,
+        acceptedDate: trimmedAcceptedDate,
+        publishedDate: trimmedPublishedDate,
+
+      });
+      setReceivedDate("");
+      setAcceptedDate("");
+      setPublishedDate("");
       setIsInputEmpty(false);
       setShow(false);
     }
@@ -52,9 +72,35 @@ export const AddCrossmark = ({ onSave }) => {
               <Form.Label>Fecha de recibido:</Form.Label>
               <Form.Control
                 type="date"
-                value={inputValue}
-                onChange={handleInputChange}
+                value={receivedDate}
+                onChange={handleReceivedDateChange}
                 placeholder="Ingrese la fecha de recibido A/M/D"
+                isInvalid={isInputEmpty}
+              />
+              <Form.Control.Feedback type="invalid">
+                El valor no puede estar vacío.
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="formCrossmarkAcceptedValue">
+              <Form.Label>Fecha de aceptado:</Form.Label>
+              <Form.Control
+                type="date"
+                value={acceptedDate}
+                onChange={handleAcceptedDateChange}
+                placeholder="Ingrese la fecha de aceptado A/M/D"
+                isInvalid={isInputEmpty}
+              />
+              <Form.Control.Feedback type="invalid">
+                El valor no puede estar vacío.
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="formCrossmarkPublisheddValue">
+              <Form.Label>Fecha de publicado:</Form.Label>
+              <Form.Control
+                type="date"
+                value={publishedDate}
+                onChange={handlePublisedDateChange}
+                placeholder="Ingrese la fecha de publicado A/M/D"
                 isInvalid={isInputEmpty}
               />
               <Form.Control.Feedback type="invalid">
