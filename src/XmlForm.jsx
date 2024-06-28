@@ -21,10 +21,12 @@ export const XmlForm = () => {
   const handleAddCrossmark = (values) => {
     const newJSON = { ...modifiedXML };
     let institucion = "";
+    let publisher = "";
 
     const addCrossmarkToNode = (node, parent = null) => {
       if (node.name === "registrant") {
         let registrant = node.value.toLowerCase().trim();
+        publisher = node.value.trim();
         const resultado = basedatos.find(
           (obj) => obj.institucion === registrant
         );
@@ -106,6 +108,15 @@ export const XmlForm = () => {
                     order: "2",
                   },
                   value: values.publishedDate,
+                  children: [],
+                },
+                {
+                  name: "assertion",
+                  attributes: {
+                    label: "This article is maintained by ",
+                    name: "publisher",
+                  },
+                  value: publisher,
                   children: [],
                 },
               ],
