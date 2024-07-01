@@ -26,6 +26,7 @@ export const XmlForm = () => {
     let articleTitle = "";
     let fullTitle = "";
     let doi = "";
+    let year = "";
 
     const addCrossmarkToNode = (node, parent = null) => {
       if (node.name === "registrant") {
@@ -56,7 +57,10 @@ export const XmlForm = () => {
           console.log("Doi no encontrado");
         }
       }
-      if (node.name === "pages" && institucion) {
+      if (node.name === "year") {
+        year = node.value.trim();
+      }
+      if (node.name === "pages" && institucion && year) {
         const crossmarkNode = {
           name: "Crossmark",
           attributes: {},
@@ -172,6 +176,15 @@ export const XmlForm = () => {
                     name: "content_type",
                   },
                   value: values.contentType,
+                  children: [],
+                },
+                {
+                  name: "assertion",
+                  attributes: {
+                    label: "Copyright",
+                    name: "copyright",
+                  },
+                  value: `© ${year} ${publisher}`,
                   children: [],
                 },
               ],
