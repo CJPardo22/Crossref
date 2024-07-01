@@ -8,6 +8,7 @@ export const AddCrossmark = ({ onSave }) => {
   const [receivedDate, setReceivedDate] = useState("");
   const [acceptedDate, setAcceptedDate] = useState("");
   const [publishedDate, setPublishedDate] = useState("");
+  const [contentType, setContentType] = useState("Artitle");
   const [isInputEmpty, setIsInputEmpty] = useState(false);
 
   const handleReceivedDateChange = (e) => {
@@ -18,27 +19,36 @@ export const AddCrossmark = ({ onSave }) => {
     setAcceptedDate(e.target.value);
   };
 
-  const handlePublisedDateChange = (e) =>{
-    setPublishedDate(e.target.value)
-  }
+  const handlePublisedDateChange = (e) => {
+    setPublishedDate(e.target.value);
+  };
+
+  const handleContentTypeChange = (e) => {
+    setContentType(e.target.value);
+  };
 
   const handleSubmit = () => {
     const trimmedReceivedDate = receivedDate.trim();
     const trimmedAcceptedDate = acceptedDate.trim();
     const trimmedPublishedDate = publishedDate.trim();
 
-    if (trimmedReceivedDate === "" || trimmedAcceptedDate === "" || trimmedAcceptedDate === "") {
+    if (
+      trimmedReceivedDate === "" ||
+      trimmedAcceptedDate === "" ||
+      trimmedPublishedDate === ""
+    ) {
       setIsInputEmpty(true);
     } else {
       onSave({
         receivedDate: trimmedReceivedDate,
         acceptedDate: trimmedAcceptedDate,
         publishedDate: trimmedPublishedDate,
-
+        contentType: contentType,
       });
       setReceivedDate("");
       setAcceptedDate("");
       setPublishedDate("");
+      setContentType("Article");
       setIsInputEmpty(false);
       setShow(false);
     }
@@ -103,6 +113,21 @@ export const AddCrossmark = ({ onSave }) => {
                 placeholder="Ingrese la fecha de publicado A/M/D"
                 isInvalid={isInputEmpty}
               />
+              <Form.Control.Feedback type="invalid">
+                El valor no puede estar vacío.
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group controlId="formCrossmarkContentType">
+              <Form.Label>Tipo de contenido:</Form.Label>
+              <Form.Select
+                value={contentType}
+                onChange={handleContentTypeChange}
+              >
+                <option value="Article">Article</option>
+                <option value="Review">Reseña</option>
+                <option value="Summary">Resumen</option>
+              </Form.Select>
               <Form.Control.Feedback type="invalid">
                 El valor no puede estar vacío.
               </Form.Control.Feedback>

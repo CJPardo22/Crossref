@@ -3,6 +3,7 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AddCrossmark } from "./AddCrossmark";
 import { basedatos } from "./basedatos";
+import { revistas } from "./revistasDoi";
 import useXMLFileStore from "./store/useXMLFileStore";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -22,6 +23,9 @@ export const XmlForm = () => {
     const newJSON = { ...modifiedXML };
     let institucion = "";
     let publisher = "";
+    let articleTitle = "";
+    let fullTitle = "";
+    let doi = "";
 
     const addCrossmarkToNode = (node, parent = null) => {
       if (node.name === "registrant") {
@@ -35,6 +39,21 @@ export const XmlForm = () => {
           console.log("Institución encontrada: ", resultado.policy);
         } else {
           console.log("Institucion no encontrada");
+        }
+      }
+      if (node.name === "title") {
+        articleTitle = node.value.trim();
+      }
+      if (node.name === "full_title") {
+        fullTitle = node.value.trim();
+        let revista = fullTitle.toLowerCase().trim();
+        const objeto = revistas.find((obj) => obj.revista === revista);
+        console.log("👻", objeto);
+        if (objeto) {
+          doi = objeto.doi;
+          console.log("Doi encontrado: ", doi);
+        } else {
+          console.log("Doi no encontrado");
         }
       }
       if (node.name === "pages" && institucion) {
@@ -91,7 +110,7 @@ export const XmlForm = () => {
                   attributes: {
                     name: "accepted",
                     label: "Accepted",
-                    group_name: "publication_histoy",
+                    group_name: "publication_history",
                     group_label: "Publication_History",
                     order: "1",
                   },
@@ -103,7 +122,7 @@ export const XmlForm = () => {
                   attributes: {
                     name: "published_online",
                     label: "Published Online",
-                    group_name: "publication_histoy",
+                    group_name: "publication_history",
                     group_label: "Publication_History",
                     order: "2",
                   },
@@ -117,6 +136,42 @@ export const XmlForm = () => {
                     name: "publisher",
                   },
                   value: publisher,
+                  children: [],
+                },
+                {
+                  name: "assertion",
+                  attributes: {
+                    label: "Article Title",
+                    name: "articletitle",
+                  },
+                  value: articleTitle,
+                  children: [],
+                },
+                {
+                  name: "assertion",
+                  attributes: {
+                    label: "Journal Title",
+                    name: "journaltitle",
+                  },
+                  value: fullTitle,
+                  children: [],
+                },
+                {
+                  name: "assertion",
+                  attributes: {
+                    label: "CrossRef DOI link to publisher maintained version",
+                    name: "articlelink",
+                  },
+                  value: doi,
+                  children: [],
+                },
+                {
+                  name: "assertion",
+                  attributes: {
+                    label: "Content Type",
+                    name: "content_type",
+                  },
+                  value: values.contentType,
                   children: [],
                 },
               ],
