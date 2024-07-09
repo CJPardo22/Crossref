@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import XMLParser from "react-xml-parser";
-import xmlJs from "xml-js";
+import React from "react";
 import useXMLFileStore from "./store/useXMLFileStore";
+import "../src/assets/style/xmltextcontent.css";
 
 export default function XMLTextContent() {
   const { xmlContent } = useXMLFileStore();
+
   const removeXMLTags = (xmlString) => {
     const regex = /<[^>]+>/g;
     return xmlString.replace(regex, "");

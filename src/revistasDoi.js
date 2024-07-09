@@ -4,7 +4,7 @@ export const revistas = [
     doi: " https://doi.org/10.21501/issn.1692-0945",
   },
   {
-    revista: "Anagramas Rumbos y Sentidos de la Comunicación",
+    revista: "anagramas rumbos y sentidos de la comunicación",
     doi: "https://doi.org/10.22395/angr",
   },
 ];

@@ -1,6 +1,6 @@
 export const basedatos = [
   {
-    institucion: "universidad de medellin",
+    institucion: "universidad de medellín",
     policy: "https://doi.org/10.66395/crossmark",
   },
   {
@@ -8,4 +8,3 @@ export const basedatos = [
     policy: "https://doi.org/10.22395/crossmark",
   },
 ];
-

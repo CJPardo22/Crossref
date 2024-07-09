@@ -1,0 +1,15 @@
+.xml-text-content {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.xml-content {
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-wrap: break-word; /* Para evitar que el texto se salga del contenedor */
+}
+
+.xml-line {
+  margin: 5px 0;
+}

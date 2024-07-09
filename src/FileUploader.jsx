@@ -1,5 +1,6 @@
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useXMLFileStore from "./store/useXMLFileStore";
+import Swal from "sweetalert2";
 
 export default function FileUploader() {
   const { xmlContent, setXMLContent } = useXMLFileStore();
@@ -10,12 +11,45 @@ export default function FileUploader() {
     const file = event.target.files[0];
 
     if (file) {
+      const fileType = file.type;
+      const fileExtension = file.name.split(".").pop().toLowerCase();
+      if (fileExtension !== "xml") {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Solo se permiten archivos con extensión .xml",
+        });
+        return;
+      }
       const reader = new FileReader();
 
       reader.onload = (e) => {
         const fileContent = e.target.result;
-        setXMLContent(fileContent);
-        navigate("/xml-text"); //Redirige al usuario a a la pagina /xml
+        try {
+          setXMLContent(fileContent);
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            },
+          });
+          Toast.fire({
+            icon: "success",
+            title: "Archivo Cargado Exitosamente",
+          });
+          navigate("/xml-text"); //Redirige al usuario a a la pagina /xml
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: `Error al cargar XML: ${error.message}`,
+          });
+        }
       };
       reader.readAsText(file);
     }
@@ -24,16 +58,12 @@ export default function FileUploader() {
   return (
     <div>
       <input
-        accept="text/xml"
+        accept=".xml"
         type="file"
         id="directoryInput"
         onChange={handleFileChange}
       />
-      {xmlContent ? (
-        <h1>Archivo XML cargado</h1>
-      ) : (
-        <h1>Seleccione un archivo XML</h1>
-      )}
+      <p>Seleccione un archivo XML</p>
     </div>
   );
 }

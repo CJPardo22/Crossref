@@ -1,0 +1,19 @@
+.container {
+  /* Estilos para el contenedor principal */
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.codeContainer {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 800px;
+  margin: 0 auto;
+  overflow-x: auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}

@@ -1,5 +1,5 @@
 import XMLParser from "react-xml-parser";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AddCrossmark } from "./AddCrossmark";
 import { basedatos } from "./basedatos";
@@ -12,6 +12,16 @@ export const XmlForm = () => {
   const { xmlContent, setXMLContent } = useXMLFileStore();
   const parsedXML = new XMLParser().parseFromString(xmlContent);
   const [modifiedXML, setModifiedXML] = useState(parsedXML);
+
+  //Funcion para manejar los articulos
+  const artitleXML = (node) => {
+    const articulos = [];
+    if (node.name === "journal") {
+      console.log(node);
+      articulos.push(node.name);
+    }
+    console.log(articulos);
+  };
 
   const handleInputChange = (e, node) => {
     const newValue = e.target.value;
@@ -27,6 +37,7 @@ export const XmlForm = () => {
     let fullTitle = "";
     let doi = "";
     let year = "";
+    let programNode = null;
 
     const addCrossmarkToNode = (node, parent = null) => {
       if (node.name === "registrant") {
@@ -59,6 +70,11 @@ export const XmlForm = () => {
       }
       if (node.name === "year") {
         year = node.value.trim();
+      }
+      if (node.name === "program") {
+        console.log("🧙‍♂️");
+        programNode = node;
+        console.log(programNode);
       }
       if (node.name === "pages" && institucion && year) {
         const crossmarkNode = {
@@ -191,6 +207,23 @@ export const XmlForm = () => {
             },
           ],
         };
+        console.log(
+          "Verificando programNode antes del segundo IF: ",
+          programNode
+        );
+        if (programNode != null) {
+          console.log("🧙🤌");
+          programNode.children = programNode.children.map((child) => {
+            if (child.name === "license_ref") {
+              child.attributes = { ...child.attributes, applies_to: "vor" };
+            }
+            return child;
+          });
+
+          crossmarkNode.children[2].children.push(programNode);
+        } else {
+          console.log("NO PASO NADA");
+        }
         console.log("💡 Entro en el primer IF");
         if (parent && parent.children) {
           console.log("💡 Entro en el segundo IF");
@@ -201,6 +234,7 @@ export const XmlForm = () => {
       if (node.children && node.children.length > 0) {
         console.log("💡 Entro en el tercer IF");
         node.children.forEach((child) => addCrossmarkToNode(child, node));
+        node.children.forEach((child) => artitleXML(child));
       }
     };
 
