@@ -7,32 +7,63 @@ import { revistas } from "./revistasDoi";
 import useXMLFileStore from "./store/useXMLFileStore";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import Stack from "react-bootstrap/Stack";
+import "../src/assets/style/xmlcontentstyle.css";
+
+//Funciones utilitarias para convertir XML a Json y viceversa
+const parseXML = (xmlContent) => new XMLParser().parseFromString(xmlContent);
+const convertJSONToXMLString = (json) => new XMLParser().toString(json);
 
 export const XmlForm = () => {
   const { xmlContent, setXMLContent } = useXMLFileStore();
-  const parsedXML = new XMLParser().parseFromString(xmlContent);
-  const [modifiedXML, setModifiedXML] = useState(parsedXML);
+  const [articles, setArticles] = useState([]);
+  const [selectedArticleIndex, setSelectedArticleIndex] = useState(0);
+  const [modifiedArticles, setModifiedArticles] = useState([]);
+  const [headData, setHeadData] = useState({});
+  // let headData = {};
 
-  //Funcion para manejar los articulos
-  const artitleXML = (node) => {
-    const articulos = [];
-    if (node.name === "journal") {
-      console.log(node);
-      articulos.push(node.name);
+  useEffect(() => {
+    if (xmlContent) {
+      const parsedXML = parseXML(xmlContent);
+      const headNode = parsedXML.children.find((node) => node.name === "head");
+      const bodyNode = parsedXML.children.find((node) => node.name === "body");
+
+      const articleNodes = bodyNode.children.filter(
+        (node) => node.name === "journal"
+      );
+      setArticles(articleNodes);
+      setModifiedArticles(articleNodes);
+
+      const registrantNode = headNode.children.find(
+        (node) => node.name === "registrant"
+      );
+      if (registrantNode) {
+        const registrant = registrantNode.value.toLowerCase().trim();
+        const publisher = registrantNode.value.trim();
+        const resultado = basedatos.find(
+          (obj) => obj.institucion === registrant
+        );
+        if (resultado) {
+          setHeadData({
+            institucion: resultado.policy,
+            publisher: publisher,
+          });
+          console.log("Institución encontrada: ", resultado.policy);
+        } else {
+          console.log("Institución no encontrada");
+        }
+      }
     }
-    console.log(articulos);
-  };
+  }, [xmlContent]);
 
   const handleInputChange = (e, node) => {
     const newValue = e.target.value;
     node.value = newValue;
-    setModifiedXML({ ...modifiedXML });
+    setModifiedArticles([...modifiedArticles]);
   };
 
   const handleAddCrossmark = (values) => {
-    const newJSON = { ...modifiedXML };
-    let institucion = "";
-    let publisher = "";
+    const newJSON = [...modifiedArticles];
     let articleTitle = "";
     let fullTitle = "";
     let doi = "";
@@ -40,19 +71,6 @@ export const XmlForm = () => {
     let programNode = null;
 
     const addCrossmarkToNode = (node, parent = null) => {
-      if (node.name === "registrant") {
-        let registrant = node.value.toLowerCase().trim();
-        publisher = node.value.trim();
-        const resultado = basedatos.find(
-          (obj) => obj.institucion === registrant
-        );
-        if (resultado) {
-          institucion = resultado.policy;
-          console.log("Institución encontrada: ", resultado.policy);
-        } else {
-          console.log("Institucion no encontrada");
-        }
-      }
       if (node.name === "title") {
         articleTitle = node.value.trim();
       }
@@ -72,20 +90,19 @@ export const XmlForm = () => {
         year = node.value.trim();
       }
       if (node.name === "program") {
-        console.log("🧙‍♂️");
         programNode = node;
-        console.log(programNode);
+        // console.log(programNode);
       }
-      if (node.name === "pages" && institucion && year) {
+      if (node.name === "pages" && headData.institucion && year) {
         const crossmarkNode = {
-          name: "Crossmark",
+          name: "crossmark",
           attributes: {},
           value: "",
           children: [
             {
               name: "crossmark_policy",
               attributes: {},
-              value: institucion,
+              value: headData.institucion,
               children: [],
             },
             {
@@ -155,7 +172,7 @@ export const XmlForm = () => {
                     label: "This article is maintained by ",
                     name: "publisher",
                   },
-                  value: publisher,
+                  value: headData.publisher,
                   children: [],
                 },
                 {
@@ -200,7 +217,7 @@ export const XmlForm = () => {
                     label: "Copyright",
                     name: "copyright",
                   },
-                  value: `© ${year} ${publisher}`,
+                  value: `© ${year} ${headData.publisher}`,
                   children: [],
                 },
               ],
@@ -211,7 +228,7 @@ export const XmlForm = () => {
           "Verificando programNode antes del segundo IF: ",
           programNode
         );
-        if (programNode != null) {
+        if (programNode) {
           console.log("🧙🤌");
           programNode.children = programNode.children.map((child) => {
             if (child.name === "license_ref") {
@@ -234,24 +251,38 @@ export const XmlForm = () => {
       if (node.children && node.children.length > 0) {
         console.log("💡 Entro en el tercer IF");
         node.children.forEach((child) => addCrossmarkToNode(child, node));
-        node.children.forEach((child) => artitleXML(child));
+        // node.children.forEach((child) => artitleXML(child));
       }
     };
 
-    newJSON.children.forEach((child) => addCrossmarkToNode(child));
-    setModifiedXML(newJSON);
+    // newJSON.children.forEach((child) => addCrossmarkToNode(child));
+    const articleNode = newJSON[selectedArticleIndex];
+    addCrossmarkToNode(articleNode);
+    newJSON[selectedArticleIndex] = articleNode;
+    setModifiedArticles(newJSON);
     console.log("❤️", newJSON);
   };
 
+  const updateJSONWithChanges = (originalJSON, modifiedArticles) => {
+    const updatedJSON = { ...originalJSON };
+    const bodyNode = updatedJSON.children.find((node) => node.name === "body");
+    bodyNode.children = modifiedArticles;
+    return updatedJSON;
+  };
+
   const handleSave = () => {
-    const updatedXMLString = new XMLParser().toString(modifiedXML);
+    const originalJSON = parseXML(xmlContent);
+    const updatedJSON = updateJSONWithChanges(originalJSON, modifiedArticles);
+    const updatedXMLString = convertJSONToXMLString(updatedJSON);
     setXMLContent(updatedXMLString);
-    console.log("Updated XML JSON:", modifiedXML);
+    console.log("Updated XML JSON:", updatedJSON);
     console.log("🤠", updatedXMLString);
   };
 
   const handleDownload = () => {
-    const updatedXMLString = new XMLParser().toString(modifiedXML);
+    const originalJSON = parseXML(xmlContent);
+    const updatedJSON = updateJSONWithChanges(originalJSON, modifiedArticles);
+    const updatedXMLString = convertJSONToXMLString(updatedJSON);
     const blob = new Blob([updatedXMLString], { type: "application/xml" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -262,6 +293,9 @@ export const XmlForm = () => {
   };
 
   const renderForm = (jsonData) => {
+    if (!jsonData || !jsonData.children) {
+      return null;
+    }
     const processNode = (node) => {
       if (node.name && node.value) {
         return (
@@ -293,15 +327,38 @@ export const XmlForm = () => {
   };
 
   return (
-    <>
-      <div>{renderForm(modifiedXML)}</div>
-      <AddCrossmark onSave={handleAddCrossmark} />
-      <Button variant="info" onClick={handleSave} style={{ margin: "10px" }}>
-        Guardar
-      </Button>
-      <Button variant="success" onClick={handleDownload}>
-        Descargar
-      </Button>
-    </>
+    <div className="container">
+      <div className="sidebar">
+        {articles.map((article, index) => (
+          <Button
+            key={index}
+            variant="info"
+            onClick={() => setSelectedArticleIndex(index)}
+            style={{ margin: "10px" }}
+          >
+            Artículo {index + 1}
+          </Button>
+        ))}
+      </div>
+      <div className="content">
+        {articles.length > 0 &&
+          renderForm(modifiedArticles[selectedArticleIndex])}
+      </div>
+      <Stack direction="vertical" gap={3}>
+        <div className="p-2">
+          <AddCrossmark onSave={handleAddCrossmark} />
+          <Button
+            variant="info"
+            onClick={handleSave}
+            style={{ margin: "10px" }}
+          >
+            Guardar
+          </Button>
+          <Button variant="success" onClick={handleDownload}>
+            Descargar
+          </Button>
+        </div>
+      </Stack>
+    </div>
   );
 };

@@ -17,3 +17,18 @@
   overflow-x: auto;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
+.container {
+  display: flex;
+}
+
+.sidebar {
+  width: 20%;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+}
+
+.content {
+  width: 80%;
+  padding: 20px;
+}
