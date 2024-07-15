@@ -14,13 +14,28 @@ import "../src/assets/style/xmlcontentstyle.css";
 const parseXML = (xmlContent) => new XMLParser().parseFromString(xmlContent);
 const convertJSONToXMLString = (json) => new XMLParser().toString(json);
 
+const findNodeByName = (node, name) => {
+  if (node.name === name) {
+    return node;
+  }
+  if (node.children) {
+    for (let child of node.children) {
+      const result = findNodeByName(child, name);
+      if (result) {
+        return result;
+      }
+    }
+  }
+  return null;
+};
+
 export const XmlForm = () => {
   const { xmlContent, setXMLContent } = useXMLFileStore();
   const [articles, setArticles] = useState([]);
   const [selectedArticleIndex, setSelectedArticleIndex] = useState(0);
   const [modifiedArticles, setModifiedArticles] = useState([]);
   const [headData, setHeadData] = useState({});
-  // let headData = {};
+  const [articleTitle, setArticleTitle] = useState("");
 
   useEffect(() => {
     if (xmlContent) {
@@ -56,6 +71,16 @@ export const XmlForm = () => {
     }
   }, [xmlContent]);
 
+  useEffect(() => {
+    if (articles.length > 0) {
+      const selectedArticle = articles[selectedArticleIndex];
+      console.log("🦄", selectedArticle);
+      const titleNode = findNodeByName(selectedArticle, "title");
+      console.log("🐻", titleNode);
+      setArticleTitle(titleNode ? titleNode.value : "");
+    }
+  }, [selectedArticleIndex, articles]);
+
   const handleInputChange = (e, node) => {
     const newValue = e.target.value;
     node.value = newValue;
@@ -78,7 +103,7 @@ export const XmlForm = () => {
         fullTitle = node.value.trim();
         let revista = fullTitle.toLowerCase().trim();
         const objeto = revistas.find((obj) => obj.revista === revista);
-        console.log("👻", objeto);
+        // console.log("👻", objeto);
         if (objeto) {
           doi = objeto.doi;
           console.log("Doi encontrado: ", doi);
@@ -89,9 +114,9 @@ export const XmlForm = () => {
       if (node.name === "year") {
         year = node.value.trim();
       }
-      if (node.name === "program") {
+      if (node.name === "program" || node.name === "ai:program") {
         programNode = node;
-        // console.log(programNode);
+        console.log("ENCONTRO EL NODO PROGRAM ", programNode);
       }
       if (node.name === "pages" && headData.institucion && year) {
         const crossmarkNode = {
@@ -224,43 +249,40 @@ export const XmlForm = () => {
             },
           ],
         };
-        console.log(
-          "Verificando programNode antes del segundo IF: ",
-          programNode
-        );
-        if (programNode) {
-          console.log("🧙🤌");
+        if (programNode != null) {
+          console.log("ENTRO A LA LOGÍCA PARA MOVER EL PROGRAM ", programNode);
           programNode.children = programNode.children.map((child) => {
-            if (child.name === "license_ref") {
+            if (
+              child.name === "license_ref" ||
+              child.name === "ai:license_ref"
+            ) {
+              console.log("AGREGANDO EL ATRIBUTO VOR AL LICENSE ", child);
               child.attributes = { ...child.attributes, applies_to: "vor" };
             }
             return child;
           });
-
           crossmarkNode.children[2].children.push(programNode);
         } else {
-          console.log("NO PASO NADA");
+          console.log("NO PASO NADA con el program node");
         }
-        console.log("💡 Entro en el primer IF");
+        // console.log("💡 Entro en el primer IF");
         if (parent && parent.children) {
-          console.log("💡 Entro en el segundo IF");
+          // console.log("💡 Entro en el segundo IF");
           const index = parent.children.indexOf(node);
           parent.children.splice(index + 1, 0, crossmarkNode);
         }
       }
       if (node.children && node.children.length > 0) {
-        console.log("💡 Entro en el tercer IF");
+        // console.log("💡 Entro en el tercer IF");
         node.children.forEach((child) => addCrossmarkToNode(child, node));
-        // node.children.forEach((child) => artitleXML(child));
       }
     };
 
-    // newJSON.children.forEach((child) => addCrossmarkToNode(child));
     const articleNode = newJSON[selectedArticleIndex];
     addCrossmarkToNode(articleNode);
     newJSON[selectedArticleIndex] = articleNode;
     setModifiedArticles(newJSON);
-    console.log("❤️", newJSON);
+    // console.log("❤️", newJSON);
   };
 
   const updateJSONWithChanges = (originalJSON, modifiedArticles) => {
@@ -333,16 +355,23 @@ export const XmlForm = () => {
           <Button
             key={index}
             variant="info"
+            className={
+              index === selectedArticleIndex ? "selected" : "buttonArtitle"
+            }
             onClick={() => setSelectedArticleIndex(index)}
-            style={{ margin: "10px" }}
           >
             Artículo {index + 1}
           </Button>
         ))}
       </div>
       <div className="content">
-        {articles.length > 0 &&
-          renderForm(modifiedArticles[selectedArticleIndex])}
+        {articles.length > 0 && (
+          <div>
+            <h2 className="title">{articleTitle}</h2>
+            {console.log("🐻‍❄️", articleTitle)}
+            {renderForm(modifiedArticles[selectedArticleIndex])}
+          </div>
+        )}
       </div>
       <Stack direction="vertical" gap={3}>
         <div className="p-2">

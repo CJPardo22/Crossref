@@ -5,7 +5,7 @@ import FileUploader from "./FileUploader";
 import XMLContent from "./XMLContent";
 import XMLTextContent from "./XMLTextContent";
 import { XmlForm } from "./XmlForm";
-import { XmlForm2 } from "./XmlForm2";
+
 import useXMLFileStore from "./store/useXMLFileStore";
 
 export default function App() {
@@ -25,8 +25,6 @@ export default function App() {
           <Route path="/xml-text" element={<XMLTextContent />} />
 
           <Route path="/form" element={<XmlForm />} />
-
-          <Route path="/form2" element={<XmlForm2 />} />
         </Routes>
       </Router>
     </>

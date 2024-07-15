@@ -32,3 +32,16 @@
   width: 80%;
   padding: 20px;
 }
+
+.selected {
+  background-color: #2ae8cb !important; /* O el color que prefieras */
+  color: black !important;
+  font-weight: bold !important;
+  margin: 10px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.buttonArtitle {
+  margin: 10px !important;
+}
+
