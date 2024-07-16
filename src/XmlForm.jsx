@@ -155,7 +155,7 @@ export const XmlForm = () => {
               attributes: {},
               value: "",
               children: [
-                {
+                values.receivedDate && {
                   name: "assertion",
                   attributes: {
                     name: "received",
@@ -167,7 +167,7 @@ export const XmlForm = () => {
                   value: values.receivedDate,
                   children: [],
                 },
-                {
+                values.acceptedDate && {
                   name: "assertion",
                   attributes: {
                     name: "accepted",
@@ -245,7 +245,7 @@ export const XmlForm = () => {
                   value: `© ${year} ${headData.publisher}`,
                   children: [],
                 },
-              ],
+              ].filter(Boolean),
             },
           ],
         };

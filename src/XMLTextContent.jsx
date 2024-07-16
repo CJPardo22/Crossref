@@ -1,5 +1,6 @@
 import React from "react";
 import useXMLFileStore from "./store/useXMLFileStore";
+import NavigationButtons from "./NavigationButtons";
 import "../src/assets/style/xmltextcontent.css";
 
 export default function XMLTextContent() {
@@ -10,11 +11,19 @@ export default function XMLTextContent() {
     return xmlString.replace(regex, "");
   };
 
+  const formatText = (text) => {
+    return text.split("\n").map((line, index) => (
+      <div key={index} className="xml-line">
+        {line}
+      </div>
+    ));
+  };
+
   return (
-    <div>
-      <h1>Contenido del archivo XML sin etiquetas</h1>
-      <pre>{removeXMLTags(xmlContent)}</pre>
-      {/* <div>{removeXMLTags(xml)}</div> */}
+    <div className="xml-text-content">
+      <NavigationButtons />
+      <h1 className="title">Contenido del archivo XML sin etiquetas</h1>
+      <div className="xml-content">{formatText(removeXMLTags(xmlContent))}</div>
     </div>
   );
 }

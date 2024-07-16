@@ -9,7 +9,7 @@ export const AddCrossmark = ({ onSave }) => {
   const [acceptedDate, setAcceptedDate] = useState("");
   const [publishedDate, setPublishedDate] = useState("");
   const [contentType, setContentType] = useState("Artitle");
-  const [isInputEmpty, setIsInputEmpty] = useState(false);
+  const [isPublishedDateEmpty, setIsPublishedDateEmpty] = useState(false);
 
   const handleReceivedDateChange = (e) => {
     setReceivedDate(e.target.value);
@@ -28,20 +28,14 @@ export const AddCrossmark = ({ onSave }) => {
   };
 
   const handleSubmit = () => {
-    const trimmedReceivedDate = receivedDate.trim();
-    const trimmedAcceptedDate = acceptedDate.trim();
     const trimmedPublishedDate = publishedDate.trim();
 
-    if (
-      trimmedReceivedDate === "" ||
-      trimmedAcceptedDate === "" ||
-      trimmedPublishedDate === ""
-    ) {
-      setIsInputEmpty(true);
+    if (trimmedPublishedDate === "") {
+      setIsPublishedDateEmpty(true);
     } else {
       onSave({
-        receivedDate: trimmedReceivedDate,
-        acceptedDate: trimmedAcceptedDate,
+        receivedDate: receivedDate.trim(),
+        acceptedDate: acceptedDate.trim(),
         publishedDate: trimmedPublishedDate,
         contentType: contentType,
       });
@@ -49,7 +43,7 @@ export const AddCrossmark = ({ onSave }) => {
       setAcceptedDate("");
       setPublishedDate("");
       setContentType("Article");
-      setIsInputEmpty(false);
+      setIsPublishedDateEmpty(false);
       setShow(false);
     }
   };
@@ -85,11 +79,7 @@ export const AddCrossmark = ({ onSave }) => {
                 value={receivedDate}
                 onChange={handleReceivedDateChange}
                 placeholder="Ingrese la fecha de recibido A/M/D"
-                isInvalid={isInputEmpty}
               />
-              <Form.Control.Feedback type="invalid">
-                El valor no puede estar vacío.
-              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="formCrossmarkAcceptedValue">
               <Form.Label>Fecha de aceptado:</Form.Label>
@@ -98,11 +88,7 @@ export const AddCrossmark = ({ onSave }) => {
                 value={acceptedDate}
                 onChange={handleAcceptedDateChange}
                 placeholder="Ingrese la fecha de aceptado A/M/D"
-                isInvalid={isInputEmpty}
               />
-              <Form.Control.Feedback type="invalid">
-                El valor no puede estar vacío.
-              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="formCrossmarkPublisheddValue">
               <Form.Label>Fecha de publicado:</Form.Label>
@@ -111,7 +97,7 @@ export const AddCrossmark = ({ onSave }) => {
                 value={publishedDate}
                 onChange={handlePublisedDateChange}
                 placeholder="Ingrese la fecha de publicado A/M/D"
-                isInvalid={isInputEmpty}
+                isInvalid={isPublishedDateEmpty}
               />
               <Form.Control.Feedback type="invalid">
                 El valor no puede estar vacío.
