@@ -4,7 +4,6 @@ import Swal from "sweetalert2";
 
 export default function FileUploader() {
   const { xmlContent, setXMLContent } = useXMLFileStore();
-  // console.log("🥑", xmlContent);
   const navigate = useNavigate();
 
   const handleFileChange = (event) => {

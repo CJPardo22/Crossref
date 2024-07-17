@@ -76,9 +76,7 @@ export const XmlForm = () => {
   useEffect(() => {
     if (articles.length > 0) {
       const selectedArticle = articles[selectedArticleIndex];
-      console.log("🦄", selectedArticle);
       const titleNode = findNodeByName(selectedArticle, "title");
-      console.log("🐻", titleNode);
       setArticleTitle(titleNode ? titleNode.value : "");
     }
   }, [selectedArticleIndex, articles]);
@@ -105,7 +103,6 @@ export const XmlForm = () => {
         fullTitle = node.value.trim();
         let revista = fullTitle.toLowerCase().trim();
         const objeto = revistas.find((obj) => obj.revista === revista);
-        // console.log("👻", objeto);
         if (objeto) {
           doi = objeto.doi;
           console.log("Doi encontrado: ", doi);
@@ -118,7 +115,6 @@ export const XmlForm = () => {
       }
       if (node.name === "program" || node.name === "ai:program") {
         programNode = node;
-        console.log("ENCONTRO EL NODO PROGRAM ", programNode);
       }
       if (node.name === "pages" && headData.institucion && year) {
         const crossmarkNode = {
@@ -252,13 +248,11 @@ export const XmlForm = () => {
           ],
         };
         if (programNode != null) {
-          console.log("ENTRO A LA LOGÍCA PARA MOVER EL PROGRAM ", programNode);
           programNode.children = programNode.children.map((child) => {
             if (
               child.name === "license_ref" ||
               child.name === "ai:license_ref"
             ) {
-              console.log("AGREGANDO EL ATRIBUTO VOR AL LICENSE ", child);
               child.attributes = { ...child.attributes, applies_to: "vor" };
             }
             return child;
@@ -267,15 +261,12 @@ export const XmlForm = () => {
         } else {
           console.log("NO PASO NADA con el program node");
         }
-        // console.log("💡 Entro en el primer IF");
         if (parent && parent.children) {
-          // console.log("💡 Entro en el segundo IF");
           const index = parent.children.indexOf(node);
           parent.children.splice(index + 1, 0, crossmarkNode);
         }
       }
       if (node.children && node.children.length > 0) {
-        // console.log("💡 Entro en el tercer IF");
         node.children.forEach((child) => addCrossmarkToNode(child, node));
       }
     };
@@ -284,7 +275,6 @@ export const XmlForm = () => {
     addCrossmarkToNode(articleNode);
     newJSON[selectedArticleIndex] = articleNode;
     setModifiedArticles(newJSON);
-    // console.log("❤️", newJSON);
   };
 
   const updateJSONWithChanges = (originalJSON, modifiedArticles) => {
@@ -299,8 +289,6 @@ export const XmlForm = () => {
     const updatedJSON = updateJSONWithChanges(originalJSON, modifiedArticles);
     const updatedXMLString = convertJSONToXMLString(updatedJSON);
     setXMLContent(updatedXMLString);
-    console.log("Updated XML JSON:", updatedJSON);
-    console.log("🤠", updatedXMLString);
   };
 
   const handleDownload = () => {
@@ -374,7 +362,6 @@ export const XmlForm = () => {
         {articles.length > 0 && (
           <div>
             <h2 className="title">{articleTitle}</h2>
-            {console.log("🐻‍❄️", articleTitle)}
             {renderForm(modifiedArticles[selectedArticleIndex])}
           </div>
         )}
