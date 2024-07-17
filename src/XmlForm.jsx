@@ -5,6 +5,7 @@ import { AddCrossmark } from "./AddCrossmark";
 import { basedatos } from "./basedatos";
 import { revistas } from "./revistasDoi";
 import useXMLFileStore from "./store/useXMLFileStore";
+import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Stack from "react-bootstrap/Stack";
@@ -30,12 +31,13 @@ const findNodeByName = (node, name) => {
 };
 
 export const XmlForm = () => {
-  const { xmlContent, setXMLContent } = useXMLFileStore();
+  const { xmlContent, setXMLContent, setchangeContentNull } = useXMLFileStore();
   const [articles, setArticles] = useState([]);
   const [selectedArticleIndex, setSelectedArticleIndex] = useState(0);
   const [modifiedArticles, setModifiedArticles] = useState([]);
   const [headData, setHeadData] = useState({});
   const [articleTitle, setArticleTitle] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (xmlContent) {
@@ -312,6 +314,10 @@ export const XmlForm = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    //Limpiar store- redireccionar
+    setchangeContentNull();
+    navigate("/");
   };
 
   const renderForm = (jsonData) => {

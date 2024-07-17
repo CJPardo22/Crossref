@@ -112,7 +112,7 @@ export const AddCrossmark = ({ onSave }) => {
               >
                 <option value="Article">Article</option>
                 <option value="Review">Reseña</option>
-                <option value="Summary">Resumen</option>
+                <option value="Editorial">Editorial</option>
               </Form.Select>
               <Form.Control.Feedback type="invalid">
                 El valor no puede estar vacío.
